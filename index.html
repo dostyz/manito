@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>마니또</title>
+
+<style>
+
+body{
+ font-family:sans-serif;
+ text-align:center;
+ margin-top:40px;
+}
+
+.hidden{
+ display:none;
+}
+
+#friends{
+ display:grid;
+ grid-template-columns:repeat(6,1fr);
+ gap:5px;
+ width:420px;
+ margin:auto;
+}
+
+button{
+ padding:8px;
+ font-size:14px;
+}
+
+.big{
+ font-size:40px;
+ font-weight:bold;
+}
+
+.small{
+ font-size:12px;
+}
+
+table{
+ margin:auto;
+ border-collapse:collapse;
+}
+
+td,th{
+ border:1px solid black;
+ padding:5px;
+}
+
+</style>
+
+</head>
+<body>
+
+
+<!-- 1 화면 -->
+
+<div id="screen1">
+
+<h2>번호를 입력하세요</h2>
+
+<input id="myNumber"><br><br>
+
+암호를 대라<br>
+<input id="pw"><br><br>
+
+<button onclick="go2()">확인</button>
+
+<br><br>
+
+<button onclick="adminLogin()">관리자</button>
+
+</div>
+
+
+
+<!-- 2 화면 -->
+
+<div id="screen2" class="hidden">
+
+<p>친한 친구의 번호를 선택하세요.</p>
+<p>선택한 친구는 마니또에서 제외됩니다</p>
+
+<div id="friends"></div>
+
+<br>
+
+<button onclick="go3()">확인</button>
+
+</div>
+
+
+
+<!-- 3 화면 -->
+
+<div id="screen3" class="hidden">
+
+<h2 id="typing"></h2>
+
+</div>
+
+
+
+<!-- 4 화면 -->
+
+<div id="screen4" class="hidden">
+
+<p>당신의 마니또는</p>
+
+<div id="result" class="big"></div>
+
+<p class="small">까먹지 않도록 화면 캡쳐 권장</p>
+
+<button onclick="location.reload()">완료</button>
+
+</div>
+
+
+
+<!-- 관리자 -->
+
+<div id="admin" class="hidden">
+
+<h2>결과</h2>
+
+<table id="table">
+
+<tr>
+<th>번호</th>
+<th>뽑은사람</th>
+</tr>
+
+</table>
+
+</div>
+
+
+
+<script>
+
+
+let students = [
+
+{num:1,name:"가서한"},
+{num:2,name:"강다솔"},
+{num:3,name:"강채원"},
+{num:4,name:"고윤솔"},
+{num:5,name:"김소리"},
+{num:6,name:"김수아"},
+{num:7,name:"노윤서"},
+{num:8,name:"문채은"},
+{num:9,name:"박민영"},
+{num:10,name:"박한을"},
+{num:11,name:"배재은"},
+{num:12,name:"신예은"},
+{num:13,name:"엄수정"},
+{num:14,name:"원태령"},
+{num:15,name:"유진명"},
+{num:16,name:"이서은"},
+{num:17,name:"이은선"},
+{num:18,name:"이해인"},
+{num:19,name:"임서현"},
+{num:20,name:"장시연"},
+{num:21,name:"전은주"},
+{num:22,name:"최소현"},
+{num:23,name:"한나연"},
+{num:24,name:"홍민서"}
+
+]
+
+let myNumber=null
+let excluded=[]
+
+
+
+function go2(){
+
+let pw=document.getElementById("pw").value
+
+if(pw!="2-9"){
+ alert("암호 틀림")
+ return
+}
+
+myNumber=Number(document.getElementById("myNumber").value)
+
+document.getElementById("screen1").classList.add("hidden")
+document.getElementById("screen2").classList.remove("hidden")
+
+makeButtons()
+
+}
+
+
+
+function makeButtons(){
+
+let box=document.getElementById("friends")
+
+students.forEach(s=>{
+
+let b=document.createElement("button")
+
+b.innerText=s.name
+
+b.onclick=()=>{
+
+if(excluded.includes(s.num)){
+ excluded=excluded.filter(n=>n!=s.num)
+ b.style.background=""
+}else{
+ excluded.push(s.num)
+ b.style.background="lightblue"
+}
+
+}
+
+box.appendChild(b)
+
+})
+
+}
+
+
+
+function go3(){
+
+document.getElementById("screen2").classList.add("hidden")
+document.getElementById("screen3").classList.remove("hidden")
+
+typing()
+
+}
+
+
+
+function typing(){
+
+let text="당신의 마니또를 공개합니다.."
+
+let i=0
+
+let t=setInterval(()=>{
+
+document.getElementById("typing").innerText+=text[i]
+
+i++
+
+if(i>=text.length){
+
+clearInterval(t)
+
+setTimeout(showResult,1500)
+
+}
+
+},80)
+
+}
+
+
+
+function showResult(){
+
+document.getElementById("screen3").classList.add("hidden")
+document.getElementById("screen4").classList.remove("hidden")
+
+let list=students.filter(s=>s.num!=myNumber)
+
+list=list.filter(s=>!excluded.includes(s.num))
+
+let r=list[Math.floor(Math.random()*list.length)]
+
+document.getElementById("result").innerText=r.name
+
+
+saveResult(myNumber,r.name)
+
+}
+
+
+
+function saveResult(num,name){
+
+let data=JSON.parse(localStorage.getItem("result")||"{}")
+
+data[num]=name
+
+localStorage.setItem("result",JSON.stringify(data))
+
+}
+
+
+
+function adminLogin(){
+
+let a=prompt("관리자 암호")
+
+if(a!="admin") return
+
+document.getElementById("screen1").classList.add("hidden")
+document.getElementById("admin").classList.remove("hidden")
+
+showTable()
+
+}
+
+
+
+function showTable(){
+
+let data=JSON.parse(localStorage.getItem("result")||"{}")
+
+let table=document.getElementById("table")
+
+for(let n in data){
+
+let tr=document.createElement("tr")
+
+let td1=document.createElement("td")
+td1.innerText=n
+
+let td2=document.createElement("td")
+td2.innerText=data[n]
+
+tr.appendChild(td1)
+tr.appendChild(td2)
+
+table.appendChild(tr)
+
+}
+
+}
+
+
+</script>
+
+</body>
+</html>
