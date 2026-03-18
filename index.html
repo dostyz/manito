@@ -12,9 +12,7 @@ body{
  margin-top:40px;
 }
 
-.hidden{
- display:none;
-}
+.hidden{display:none;}
 
 #friends{
  display:grid;
@@ -26,16 +24,11 @@ body{
 
 button{
  padding:8px;
- font-size:14px;
 }
 
 .big{
  font-size:40px;
  font-weight:bold;
-}
-
-.small{
- font-size:12px;
 }
 
 table{
@@ -49,7 +42,6 @@ td,th{
 }
 
 </style>
-
 </head>
 <body>
 
@@ -79,8 +71,7 @@ td,th{
 
 <div id="screen2" class="hidden">
 
-<p>친한 친구의 번호를 선택하세요.</p>
-<p>선택한 친구는 마니또에서 제외됩니다</p>
+<p>친한 친구 선택 (선택 시 제외)</p>
 
 <div id="friends"></div>
 
@@ -110,7 +101,7 @@ td,th{
 
 <div id="result" class="big"></div>
 
-<p class="small">까먹지 않도록 화면 캡쳐 권장</p>
+<p>캡쳐 권장</p>
 
 <button onclick="location.reload()">완료</button>
 
@@ -123,6 +114,8 @@ td,th{
 <div id="admin" class="hidden">
 
 <h2>결과</h2>
+
+<button onclick="resetAll()">전체 초기화</button>
 
 <table id="table">
 
@@ -140,7 +133,7 @@ td,th{
 <script>
 
 
-let students = [
+let students=[
 
 {num:1,name:"가서한"},
 {num:2,name:"강다솔"},
@@ -174,6 +167,8 @@ let excluded=[]
 
 
 
+// 시작
+
 function go2(){
 
 let pw=document.getElementById("pw").value
@@ -193,6 +188,8 @@ makeButtons()
 }
 
 
+
+// 친구 버튼
 
 function makeButtons(){
 
@@ -235,6 +232,8 @@ typing()
 
 
 
+// 타이핑
+
 function typing(){
 
 let text="당신의 마니또를 공개합니다.."
@@ -261,6 +260,8 @@ setTimeout(showResult,1500)
 
 
 
+// 결과
+
 function showResult(){
 
 document.getElementById("screen3").classList.add("hidden")
@@ -269,6 +270,22 @@ document.getElementById("screen4").classList.remove("hidden")
 let list=students.filter(s=>s.num!=myNumber)
 
 list=list.filter(s=>!excluded.includes(s.num))
+
+
+// 이미 뽑힌 사람 제외
+
+let data=JSON.parse(localStorage.getItem("result")||"{}")
+
+let usedNames=Object.values(data)
+
+list=list.filter(s=>!usedNames.includes(s.name))
+
+
+if(list.length==0){
+ alert("남은 사람이 없음")
+ return
+}
+
 
 let r=list[Math.floor(Math.random()*list.length)]
 
@@ -281,6 +298,8 @@ saveResult(myNumber,r.name)
 
 
 
+// 저장
+
 function saveResult(num,name){
 
 let data=JSON.parse(localStorage.getItem("result")||"{}")
@@ -292,6 +311,8 @@ localStorage.setItem("result",JSON.stringify(data))
 }
 
 
+
+// 관리자
 
 function adminLogin(){
 
@@ -328,6 +349,22 @@ tr.appendChild(td1)
 tr.appendChild(td2)
 
 table.appendChild(tr)
+
+}
+
+}
+
+
+
+// 전체 초기화
+
+function resetAll(){
+
+if(confirm("전체 삭제?")){
+
+localStorage.clear()
+
+location.reload()
 
 }
 
