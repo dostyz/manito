@@ -8,42 +8,124 @@
 
 body{
  font-family:sans-serif;
+ background:#ffe6f0;
  text-align:center;
- margin-top:40px;
+ margin:0;
+ padding:0;
 }
 
-.hidden{display:none;}
 
-#friends{
- display:grid;
- grid-template-columns:repeat(6,1fr);
- gap:5px;
- width:420px;
- margin:auto;
+/* 화면 박스 */
+
+#screen1,
+#screen2,
+#screen3,
+#screen4,
+#admin{
+
+ width:520px;
+ margin:60px auto;
+ background:white;
+ padding:30px;
+ border-radius:20px;
+ box-shadow:0 4px 15px rgba(0,0,0,0.1);
+
 }
+
+
+/* 입력창 */
+
+input{
+
+ padding:10px;
+ border-radius:10px;
+ border:1px solid #ffb6d5;
+ outline:none;
+ font-size:16px;
+
+}
+
+
+/* 버튼 */
 
 button{
- padding:8px;
+
+ padding:10px 15px;
+ border:none;
+ border-radius:12px;
+ background:#ff8fc2;
+ color:white;
+ font-size:14px;
+ cursor:pointer;
+ transition:0.2s;
+
 }
+
+button:hover{
+
+ background:#ff6fb1;
+
+}
+
+button:active{
+
+ transform:scale(0.95);
+
+}
+
+
+/* 친구 버튼 그리드 */
+
+#friends{
+
+ display:grid;
+ grid-template-columns:repeat(6,1fr);
+ gap:8px;
+ margin-top:10px;
+
+}
+
+#friends button{
+
+ background:#ffd6e8;
+ color:black;
+
+}
+
+
+/* 결과 글씨 */
 
 .big{
- font-size:40px;
+
+ font-size:50px;
+ color:#ff4da6;
  font-weight:bold;
+
 }
 
+
+/* 표 */
+
 table{
+
  margin:auto;
  border-collapse:collapse;
+
 }
 
 td,th{
- border:1px solid black;
- padding:5px;
+
+ border:1px solid #ffb6d5;
+ padding:6px;
+
 }
 
-</style>
-</head>
-<body>
+
+/* 숨김 */
+
+.hidden{
+ display:none;
+}
 
 
 <!-- 1 화면 -->
