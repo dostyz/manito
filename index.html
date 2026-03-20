@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>마니또</title>
+<title>마니또 제출</title>
 
 <style>
 
@@ -14,89 +14,35 @@ body{
  padding:0;
 }
 
-
-/* 화면 박스 */
-
-#screen1,
-#screen2,
-#screen3,
-#screen4,
-#admin{
-
- width:520px;
+.box{
+ width:420px;
  margin:60px auto;
  background:white;
  padding:30px;
  border-radius:20px;
  box-shadow:0 4px 15px rgba(0,0,0,0.1);
-
 }
-
-
-/* 입력창 */
 
 input{
-
  padding:10px;
- border-radius:10px;
+ border-radius:12px;
  border:1px solid #ffb6d5;
- outline:none;
  font-size:16px;
-
+ outline:none;
 }
 
-
-/* 버튼 */
-
 button{
-
  padding:10px 15px;
  border:none;
- border-radius:12px;
+ border-radius:14px;
  background:#ff8fc2;
  color:white;
- font-size:14px;
  cursor:pointer;
- transition:0.2s;
-
 }
 
 button:hover{
  background:#ff6fb1;
 }
-
-button:active{
- transform:scale(0.95);
-}
-
-
-/* 친구 버튼 */
-
-#friends{
-
- display:grid;
- grid-template-columns:repeat(6,1fr);
- gap:8px;
- margin-top:10px;
-
-}
-
-#friends button{
- background:#ffd6e8;
- color:black;
-}
-
-
-/* 결과 글씨 */
-
-.big{
- font-size:50px;
- color:#ff4da6;
- font-weight:bold;
-}
-
-
-/* 표 */
 
 table{
  margin:auto;
@@ -108,93 +54,44 @@ td,th{
  padding:6px;
 }
 
-
-/* 숨김 */
-
 .hidden{
  display:none;
 }
 
 </style>
-
 </head>
 <body>
 
 
-<!-- 1 화면 -->
+<div class="box" id="submitBox">
 
-<div id="screen1">
+<h2>마니또 제출</h2>
 
-<h2>번호를 입력하세요</h2>
+번호<br>
+<input id="num"><br><br>
 
-<input id="myNumber"><br><br>
+내 마니또 이름<br>
+<input id="target"><br><br>
 
-암호를 대라<br>
-<input id="pw"><br><br>
-
-<button onclick="go2()">확인</button>
+<button onclick="send()">제출</button>
 
 <br><br>
 
-<button onclick="adminLogin()">관리자</button>
+<button onclick="admin()">관리자</button>
 
 </div>
 
 
 
-<!-- 2 화면 -->
-
-<div id="screen2" class="hidden">
-
-<p>친한 친구 선택 (선택 시 제외)</p>
-
-<div id="friends"></div>
-
-<br>
-
-<button onclick="go3()">확인</button>
-
-</div>
-
-
-
-<!-- 3 -->
-
-<div id="screen3" class="hidden">
-<h2 id="typing"></h2>
-</div>
-
-
-
-<!-- 4 -->
-
-<div id="screen4" class="hidden">
-
-<p>당신의 마니또는</p>
-
-<div id="result" class="big"></div>
-
-<p>캡쳐 권장</p>
-
-<button onclick="location.reload()">완료</button>
-
-</div>
-
-
-
-<!-- 관리자 -->
-
-<div id="admin" class="hidden">
+<div class="box hidden" id="adminBox">
 
 <h2>결과</h2>
-
-<button onclick="resetAll()">전체 초기화</button>
 
 <table id="table">
 
 <tr>
 <th>번호</th>
-<th>뽑은사람</th>
+<th>마니또</th>
 </tr>
 
 </table>
@@ -203,223 +100,92 @@ td,th{
 
 
 
-<script>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+ getFirestore,
+ collection,
+ addDoc,
+ getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-let students=[
+// 🔴 여기 Firebase 설정 넣기
 
-{num:1,name:"가서한"},
-{num:2,name:"강다솔"},
-{num:3,name:"강채원"},
-{num:4,name:"고윤솔"},
-{num:5,name:"김소리"},
-{num:6,name:"김수아"},
-{num:7,name:"노윤서"},
-{num:8,name:"문채은"},
-{num:9,name:"박민영"},
-{num:10,name:"박한을"},
-{num:11,name:"배재은"},
-{num:12,name:"신예은"},
-{num:13,name:"엄수정"},
-{num:14,name:"원태령"},
-{num:15,name:"유진명"},
-{num:16,name:"이서은"},
-{num:17,name:"이은선"},
-{num:18,name:"이해인"},
-{num:19,name:"임서현"},
-{num:20,name:"장시연"},
-{num:21,name:"전은주"},
-{num:22,name:"최소현"},
-{num:23,name:"한나연"},
-{num:24,name:"홍민서"}
+const firebaseConfig = {
 
-]
+ apiKey: "여기",
+ authDomain: "여기",
+ projectId: "여기",
+ storageBucket: "여기",
+ messagingSenderId: "여기",
+ appId: "여기"
 
-let myNumber=null
-let excluded=[]
+};
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 
 
-function go2(){
+async function send(){
 
-let pw=document.getElementById("pw").value
+let num=document.getElementById("num").value
+let target=document.getElementById("target").value
 
-if(pw!="2-9"){
- alert("암호 틀림")
+if(!num || !target){
+ alert("입력")
  return
 }
 
-myNumber=Number(document.getElementById("myNumber").value)
+await addDoc(collection(db,"manito"),{
 
-document.getElementById("screen1").classList.add("hidden")
-document.getElementById("screen2").classList.remove("hidden")
-
-makeButtons()
-
-}
-
-
-
-function makeButtons(){
-
-let box=document.getElementById("friends")
-
-students.forEach(s=>{
-
-let b=document.createElement("button")
-
-b.innerText=s.name
-
-b.onclick=()=>{
-
-if(excluded.includes(s.num)){
- excluded=excluded.filter(n=>n!=s.num)
- b.style.background=""
-}else{
- excluded.push(s.num)
- b.style.background="#ff8fc2"
-}
-
-}
-
-box.appendChild(b)
+ num:num,
+ target:target
 
 })
 
-}
-
-
-
-function go3(){
-
-document.getElementById("screen2").classList.add("hidden")
-document.getElementById("screen3").classList.remove("hidden")
-
-typing()
+alert("저장됨")
 
 }
 
 
 
-function typing(){
+window.admin=async function(){
 
-let text="당신의 마니또를 공개합니다.."
+let pw=prompt("암호")
 
-let i=0
+if(pw!="admin") return
 
-let t=setInterval(()=>{
+document.getElementById("submitBox").classList.add("hidden")
+document.getElementById("adminBox").classList.remove("hidden")
 
-document.getElementById("typing").innerText+=text[i]
-
-i++
-
-if(i>=text.length){
-
-clearInterval(t)
-
-setTimeout(showResult,1500)
-
-}
-
-},80)
-
-}
-
-
-
-function showResult(){
-
-document.getElementById("screen3").classList.add("hidden")
-document.getElementById("screen4").classList.remove("hidden")
-
-let list=students.filter(s=>s.num!=myNumber)
-list=list.filter(s=>!excluded.includes(s.num))
-
-let data=JSON.parse(localStorage.getItem("result")||"{}")
-let used=Object.values(data)
-
-list=list.filter(s=>!used.includes(s.name))
-
-if(list.length==0){
- alert("남은 사람 없음")
- return
-}
-
-let r=list[Math.floor(Math.random()*list.length)]
-
-document.getElementById("result").innerText=r.name
-
-saveResult(myNumber,r.name)
-
-}
-
-
-
-function saveResult(num,name){
-
-let data=JSON.parse(localStorage.getItem("result")||"{}")
-
-data[num]=name
-
-localStorage.setItem("result",JSON.stringify(data))
-
-}
-
-
-
-function adminLogin(){
-
-let a=prompt("관리자 암호")
-
-if(a!="admin") return
-
-document.getElementById("screen1").classList.add("hidden")
-document.getElementById("admin").classList.remove("hidden")
-
-showTable()
-
-}
-
-
-
-function showTable(){
-
-let data=JSON.parse(localStorage.getItem("result")||"{}")
+let snap=await getDocs(collection(db,"manito"))
 
 let table=document.getElementById("table")
 
-for(let n in data){
+snap.forEach(doc=>{
+
+let d=doc.data()
 
 let tr=document.createElement("tr")
 
 let td1=document.createElement("td")
-td1.innerText=n
+td1.innerText=d.num
 
 let td2=document.createElement("td")
-td2.innerText=data[n]
+td2.innerText=d.target
 
 tr.appendChild(td1)
 tr.appendChild(td2)
 
 table.appendChild(tr)
 
-}
+})
 
 }
-
-
-
-function resetAll(){
-
-if(confirm("전체 삭제?")){
-
-localStorage.clear()
-location.reload()
-
-}
-
-}
-
 
 </script>
 
