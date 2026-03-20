@@ -162,6 +162,17 @@ if(pw != "admin") return
 document.getElementById("submitBox").classList.add("hidden")
 document.getElementById("adminBox").classList.remove("hidden")
 
+let snap = await getDocs(collection(db,"manito"))
+
+let table = document.getElementById("table")
+
+table.innerHTML = `
+<tr>
+<th>번호</th>
+<th>마니또</th>
+</tr>
+`
+
 let arr = []
 
 snap.forEach(doc=>{
