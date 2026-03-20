@@ -162,21 +162,23 @@ if(pw != "admin") return
 document.getElementById("submitBox").classList.add("hidden")
 document.getElementById("adminBox").classList.remove("hidden")
 
-let snap = await getDocs(collection(db,"manito"))
-
-let table = document.getElementById("table")
+let arr = []
 
 snap.forEach(doc=>{
+ arr.push(doc.data())
+})
 
-let d = doc.data()
+arr.sort((a,b)=>Number(a.num)-Number(b.num))
 
-let tr = document.createElement("tr")
+arr.forEach(d=>{
 
-let td1 = document.createElement("td")
-td1.innerText = d.num
+let tr=document.createElement("tr")
 
-let td2 = document.createElement("td")
-td2.innerText = d.target
+let td1=document.createElement("td")
+td1.innerText=d.num
+
+let td2=document.createElement("td")
+td2.innerText=d.target
 
 tr.appendChild(td1)
 tr.appendChild(td2)
