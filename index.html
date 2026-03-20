@@ -173,23 +173,28 @@ table.innerHTML = `
 </tr>
 `
 
-let arr = []
+let docs = snap.docs
 
-snap.forEach(doc=>{
- arr.push(doc.data())
+docs.sort((a,b)=>{
+
+let A = Number(a.data().num)
+let B = Number(b.data().num)
+
+return A - B
+
 })
 
-arr.sort((a,b)=>Number(a.num)-Number(b.num))
+docs.forEach(doc=>{
 
-arr.forEach(d=>{
+let d = doc.data()
 
-let tr=document.createElement("tr")
+let tr = document.createElement("tr")
 
-let td1=document.createElement("td")
-td1.innerText=d.num
+let td1 = document.createElement("td")
+td1.innerText = d.num
 
-let td2=document.createElement("td")
-td2.innerText=d.target
+let td2 = document.createElement("td")
+td2.innerText = d.target
 
 tr.appendChild(td1)
 tr.appendChild(td2)
