@@ -125,7 +125,12 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
- async function send(){
+
+
+
+/* 제출 */
+
+window.send = async function(){
 
 let num = document.getElementById("num").value
 let target = document.getElementById("target").value
@@ -144,6 +149,9 @@ alert("저장됨")
 
 }
 
+
+
+/* 관리자 */
 
 window.admin = async function(){
 
